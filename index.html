@@ -5,18 +5,18 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
 <meta name="apple-mobile-web-app-capable" content="yes">
 <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">
-<meta name="apple-mobile-web-app-title" content="Tarjetas">
 <meta name="theme-color" content="#0f0f0f">
-<title>Tarjetas Digitales</title>
+<title>CONALCA — Tarjetas Digitales</title>
 <style>
 *,*::before,*::after{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
 :root{
-  --bg:#0f0f0f;--surface:#1a1a1a;--surface2:#242424;
-  --border:#2e2e2e;--border2:#383838;
-  --blue:#3b7eff;--blue-dim:rgba(59,126,255,.14);
-  --green:#22c55e;--green-dim:rgba(34,197,94,.13);
-  --red:#ef4444;--red-dim:rgba(239,68,68,.12);
-  --yellow:#f59e0b;--yellow-dim:rgba(245,158,11,.12);
+  --bg:#0f0f0f;--surface:#1a1a1a;--surface2:#222;
+  --border:#2e2e2e;--border2:#3a3a3a;
+  --blue:#3b7eff;--blue-d:rgba(59,126,255,.14);
+  --green:#22c55e;--green-d:rgba(34,197,94,.13);
+  --red:#ef4444;--red-d:rgba(239,68,68,.12);
+  --yellow:#f59e0b;--yellow-d:rgba(245,158,11,.12);
+  --wa:#25d166;--wa-d:rgba(37,209,102,.13);
   --text:#f0ede6;--text2:#9c9890;--text3:#5c5a56;
   --safe-top:env(safe-area-inset-top,0px);
   --safe-bottom:env(safe-area-inset-bottom,0px);
@@ -24,224 +24,236 @@
 html,body{height:100%;overflow:hidden}
 body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Helvetica,Arial,sans-serif;color:var(--text);display:flex;flex-direction:column;-webkit-font-smoothing:antialiased}
 
-/* ── SPLASH ── */
-#splash{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:999;transition:opacity .4s,visibility .4s}
-#splash.hide{opacity:0;visibility:hidden;pointer-events:none}
-.splash-icon{width:80px;height:80px;background:var(--blue);border-radius:22px;display:flex;align-items:center;justify-content:center;margin-bottom:18px}
-.splash-icon svg{width:44px;height:44px;color:#fff}
-#splash h1{font-size:22px;font-weight:600;margin-bottom:5px}
-#splash p{font-size:14px;color:var(--text3)}
-
-/* ── PIN MODAL ── */
-.pin-overlay{position:fixed;inset:0;background:rgba(0,0,0,.7);z-index:200;display:none;align-items:center;justify-content:center;backdrop-filter:blur(4px);-webkit-backdrop-filter:blur(4px)}
-.pin-overlay.show{display:flex}
-.pin-box{background:var(--surface);border:0.5px solid var(--border2);border-radius:20px;padding:28px 24px;width:min(320px,90vw);text-align:center}
-.pin-box h2{font-size:16px;font-weight:600;margin-bottom:6px}
-.pin-box p{font-size:13px;color:var(--text3);margin-bottom:20px}
-.pin-dots{display:flex;gap:12px;justify-content:center;margin-bottom:18px}
-.pin-dot{width:14px;height:14px;border-radius:50%;background:var(--border2);transition:background .15s}
-.pin-dot.filled{background:var(--blue)}
-.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;margin-bottom:14px}
-.pin-key{height:52px;border-radius:12px;border:0.5px solid var(--border2);background:var(--surface2);color:var(--text);font-size:20px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .1s}
-.pin-key:active{background:var(--border2)}
+/* PANTALLA PIN */
+#pin-screen{position:fixed;inset:0;background:var(--bg);display:flex;flex-direction:column;align-items:center;justify-content:center;z-index:500;padding:24px;padding-top:calc(24px + var(--safe-top))}
+#pin-screen.hide{display:none}
+.logo{width:72px;height:72px;background:var(--blue);border-radius:20px;display:flex;align-items:center;justify-content:center;margin-bottom:16px}
+.logo svg{width:40px;height:40px;color:#fff}
+.pin-title{font-size:20px;font-weight:700;margin-bottom:4px;text-align:center}
+.pin-sub{font-size:13px;color:var(--text3);margin-bottom:28px;text-align:center}
+.pin-dots{display:flex;gap:14px;justify-content:center;margin-bottom:24px}
+.pin-dot{width:16px;height:16px;border-radius:50%;background:var(--border2);transition:background .15s,transform .1s}
+.pin-dot.on{background:var(--blue);transform:scale(1.1)}
+.pin-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px;width:100%;max-width:280px;margin-bottom:14px}
+.pin-key{height:56px;border-radius:14px;border:0.5px solid var(--border2);background:var(--surface);color:var(--text);font-size:22px;font-weight:500;cursor:pointer;font-family:inherit;transition:background .1s,transform .08s}
+.pin-key:active{background:var(--border2);transform:scale(.95)}
 .pin-key.wide{grid-column:span 2}
-.pin-key.del{font-size:15px;color:var(--text2)}
-.pin-err{font-size:12.5px;color:var(--red);min-height:18px;margin-top:2px}
-.pin-cancel{margin-top:10px;font-size:13px;color:var(--text3);cursor:pointer;background:none;border:none;font-family:inherit;padding:6px}
+.pin-key.del{font-size:16px;color:var(--text2)}
+.pin-err{font-size:13px;color:var(--red);min-height:20px;text-align:center}
+.pin-skip{margin-top:18px;font-size:13px;color:var(--text3);cursor:pointer;background:none;border:none;font-family:inherit;padding:8px 16px;border-radius:8px}
 
-/* ── SCREENS ── */
-#screens{flex:1;overflow:hidden;position:relative}
-.screen{position:absolute;inset:0;overflow-y:auto;-webkit-overflow-scrolling:touch;display:none;padding-top:calc(var(--safe-top) + 8px)}
-.screen.active{display:block}
+/* APP */
+#app{flex:1;display:flex;flex-direction:column;overflow:hidden}
+#app.hide{display:none}
 
-/* ── NAV ── */
-#nav{flex-shrink:0;background:rgba(26,26,26,.96);border-top:0.5px solid var(--border);display:flex;padding-bottom:var(--safe-bottom);backdrop-filter:blur(20px);-webkit-backdrop-filter:blur(20px)}
-.nav-item{flex:1;display:flex;flex-direction:column;align-items:center;gap:3px;padding:10px 0 8px;cursor:pointer;color:var(--text3);font-size:10.5px;font-weight:500;transition:color .15s;border:none;background:none;font-family:inherit}
-.nav-item.active{color:var(--blue)}
-.nav-item svg{width:22px;height:22px}
-
-/* ── TOPBAR ── */
-.topbar{padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;background:rgba(15,15,15,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);z-index:10;border-bottom:0.5px solid var(--border)}
-.topbar-info h1{font-size:17px;font-weight:600}
-.topbar-info p{font-size:12px;color:var(--text3);margin-top:1px}
-.topbar-actions{display:flex;gap:8px}
-.btn-icon{width:36px;height:36px;border-radius:50%;background:var(--blue);border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;transition:opacity .15s}
-.btn-icon:active{opacity:.75}
+/* TOPBAR */
+.topbar{padding:14px 18px 10px;display:flex;align-items:center;justify-content:space-between;background:rgba(15,15,15,.92);backdrop-filter:blur(16px);-webkit-backdrop-filter:blur(16px);border-bottom:0.5px solid var(--border);position:sticky;top:0;z-index:10;padding-top:calc(14px + var(--safe-top))}
+.topbar h1{font-size:17px;font-weight:600;display:flex;align-items:center;gap:8px}
+.topbar p{font-size:12px;color:var(--text3);margin-top:1px}
+.admin-pill{display:inline-flex;align-items:center;gap:4px;padding:2px 8px;background:rgba(245,158,11,.15);color:var(--yellow);border-radius:20px;font-size:11px;font-weight:500}
+.topbar-right{display:flex;gap:8px}
+.btn-icon{width:36px;height:36px;border-radius:50%;border:none;display:flex;align-items:center;justify-content:center;cursor:pointer;color:#fff;transition:opacity .15s}
+.btn-icon:active{opacity:.7}
 .btn-icon svg{width:20px;height:20px}
+.btn-icon.primary{background:var(--blue)}
 .btn-icon.ghost{background:var(--surface2);color:var(--text2)}
 
-/* ── ADMIN BADGE ── */
-.admin-badge{display:inline-flex;align-items:center;gap:5px;padding:3px 9px;background:rgba(245,158,11,.15);color:var(--yellow);border-radius:20px;font-size:11px;font-weight:500;margin-left:8px}
+/* CONTENIDO */
+#content{flex:1;overflow-y:auto;-webkit-overflow-scrolling:touch;padding:12px 14px calc(20px + var(--safe-bottom))}
 
-/* ── LISTA ── */
-.list-content{padding:12px 14px 24px;display:flex;flex-direction:column;gap:12px}
+/* EMPTY */
+.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:55vh;text-align:center;color:var(--text3);padding:24px}
+.empty svg{width:52px;height:52px;opacity:.2;margin-bottom:14px}
+.empty h3{font-size:16px;color:var(--text2);font-weight:500;margin-bottom:6px}
+.empty p{font-size:13px;line-height:1.55}
 
-/* ── TARJETA ── */
+/* LISTA */
+.cards-list{display:flex;flex-direction:column;gap:12px}
+
+/* TARJETA */
 .biz-card{background:linear-gradient(145deg,#1e1c18,#131210);border:0.5px solid #2a2620;border-radius:16px;padding:18px;position:relative;overflow:hidden}
-.biz-card::before{content:'';position:absolute;top:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--blue),#7aaeff)}
+.biz-card::before{content:"";position:absolute;top:0;left:0;right:0;height:2.5px;background:linear-gradient(90deg,var(--blue),#7aaeff)}
 .card-top{display:flex;align-items:flex-start;justify-content:space-between;gap:10px}
 .card-name{font-size:16px;font-weight:600;color:#f5f2ec;line-height:1.2}
 .card-role{font-size:12px;color:#7aaeff;margin-top:3px}
 .card-company{font-size:10.5px;color:var(--text3);text-transform:uppercase;letter-spacing:.9px;margin-top:7px}
-.qr-wrap{background:#fff;border-radius:8px;padding:5px;flex-shrink:0;width:70px;height:70px;display:flex;align-items:center;justify-content:center}
-.qr-wrap svg{display:block}
+.qr-wrap{background:#fff;border-radius:8px;padding:5px;flex-shrink:0;width:70px;height:70px;display:flex;align-items:center;justify-content:center;overflow:hidden}
 .card-div{height:0.5px;background:#2a2620;margin:13px 0 10px}
 .card-contacts{display:flex;flex-direction:column;gap:5px}
-.contact-row{display:flex;align-items:center;gap:7px;font-size:11.5px;color:#c5c0b6}
-.contact-row svg{width:13px;height:13px;color:var(--text3);flex-shrink:0}
+.crow{display:flex;align-items:center;gap:7px;font-size:11.5px;color:#c5c0b6}
+.crow svg{width:13px;height:13px;color:var(--text3);flex-shrink:0}
 
 /* ACCIONES */
 .card-actions{display:flex;gap:7px;margin-top:13px;flex-wrap:wrap}
-.cta{flex:1;min-width:0;padding:9px 6px;border-radius:10px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;border:none;transition:opacity .15s}
+.cta{flex:1;min-width:80px;padding:9px 6px;border-radius:10px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:5px;border:none;-webkit-user-select:none;user-select:none}
 .cta:active{opacity:.7}
 .cta svg{width:14px;height:14px;flex-shrink:0}
-.cta-green{background:var(--green-dim);color:var(--green)}
-.cta-wa{background:rgba(37,211,102,.14);color:#25d166;font-size:11.5px}
-.cta-blue{background:var(--blue-dim);color:var(--blue)}
-.cta-yellow{background:var(--yellow-dim);color:var(--yellow)}
+.cta-wa{background:var(--wa-d);color:var(--wa)}
+.cta-blue{background:var(--blue-d);color:var(--blue)}
 .cta-gray{background:var(--surface2);color:var(--text2)}
-.cta-red{flex:0 0 auto;padding:9px 11px;background:var(--red-dim);color:var(--red)}
+.cta-red{flex:0 0 auto;padding:9px 11px;background:var(--red-d);color:var(--red)}
 
-/* EMPTY */
-.empty{display:flex;flex-direction:column;align-items:center;justify-content:center;padding:60px 24px;text-align:center;color:var(--text3);min-height:50vh}
-.empty svg{width:52px;height:52px;opacity:.2;margin-bottom:16px}
-.empty h3{font-size:16px;color:var(--text2);font-weight:500;margin-bottom:5px}
-.empty p{font-size:13px;line-height:1.5}
+/* ENLACE COPIADO TOAST */
+#toast{position:fixed;bottom:calc(24px + var(--safe-bottom));left:50%;transform:translateX(-50%) translateY(12px);background:#1e1e1e;border:0.5px solid var(--border2);color:var(--text);font-size:13.5px;padding:10px 18px;border-radius:30px;white-space:nowrap;z-index:600;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none}
+#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
 
-/* ── SHEET FORMULARIO ── */
-.sheet-overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;backdrop-filter:blur(2px);-webkit-backdrop-filter:blur(2px)}
-.sheet-overlay.show{opacity:1;visibility:visible}
+/* VISTA INDIVIDUAL (cuando se accede con ?id=) */
+#card-view{position:fixed;inset:0;background:var(--bg);display:none;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px calc(24px + var(--safe-bottom));padding-top:calc(24px + var(--safe-top))}
+#card-view.show{display:flex}
+.single-card{background:linear-gradient(145deg,#1e1c18,#131210);border:0.5px solid #2a2620;border-radius:24px;padding:28px 24px 22px;width:100%;max-width:360px;position:relative;overflow:hidden}
+.single-card::before{content:"";position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,var(--blue),#7aaeff)}
+.single-top{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}
+.single-info{flex:1;min-width:0}
+.single-name{font-size:20px;font-weight:700;color:#f5f2ec;line-height:1.2;margin-bottom:4px}
+.single-role{font-size:13px;color:#7aaeff;margin-bottom:3px}
+.single-company{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:1px;margin-top:6px}
+.single-qr{background:#fff;border-radius:12px;padding:8px;flex-shrink:0;width:110px;height:110px;display:flex;align-items:center;justify-content:center}
+.single-div{height:0.5px;background:#2a2620;margin:0 0 16px}
+.single-contacts{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}
+.single-crow{display:flex;align-items:center;gap:10px;font-size:13px;color:#c5c0b6}
+.single-crow svg{width:15px;height:15px;color:var(--text3);flex-shrink:0}
+.single-actions{display:flex;gap:9px}
+.sbtn{flex:1;padding:13px 6px;border-radius:12px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+.sbtn:active{opacity:.75}
+.sbtn svg{width:15px;height:15px}
+.sbtn-green{background:rgba(34,197,94,.14);color:var(--green)}
+.sbtn-blue{background:var(--blue-d);color:var(--blue)}
+.install-tip{margin-top:14px;font-size:11.5px;color:var(--text3);text-align:center;line-height:1.5}
+
+/* SHEET */
+.overlay{position:fixed;inset:0;background:rgba(0,0,0,.6);z-index:100;opacity:0;visibility:hidden;transition:opacity .3s,visibility .3s;backdrop-filter:blur(3px);-webkit-backdrop-filter:blur(3px)}
+.overlay.show{opacity:1;visibility:visible}
 .sheet{position:fixed;bottom:0;left:0;right:0;background:var(--surface);border-radius:20px 20px 0 0;border-top:0.5px solid var(--border2);z-index:101;transform:translateY(100%);transition:transform .35s cubic-bezier(.32,0,.67,0);max-height:92vh;overflow-y:auto;padding-bottom:var(--safe-bottom)}
 .sheet.show{transform:translateY(0);transition-timing-function:cubic-bezier(.33,1,.68,1)}
 .sheet-handle{width:36px;height:4px;background:var(--border2);border-radius:2px;margin:12px auto 0}
-.sheet-title{font-size:16px;font-weight:600;color:var(--text);padding:14px 20px 14px;border-bottom:0.5px solid var(--border)}
+.sheet-head{font-size:16px;font-weight:600;padding:14px 20px;border-bottom:0.5px solid var(--border)}
 .sheet-body{padding:16px 18px 8px}
 .sfield{display:flex;flex-direction:column;gap:6px;margin-bottom:13px}
 .sfield label{font-size:11px;font-weight:500;color:var(--text3);text-transform:uppercase;letter-spacing:.55px}
-.sfield input{height:44px;padding:0 14px;background:var(--surface2);border:0.5px solid var(--border2);border-radius:10px;font-size:15px;color:var(--text);font-family:inherit;-webkit-appearance:none}
+.sfield input{height:44px;padding:0 14px;background:var(--surface2);border:0.5px solid var(--border2);border-radius:10px;font-size:15px;color:var(--text);font-family:inherit;-webkit-appearance:none;appearance:none}
 .sfield input:focus{outline:none;border-color:var(--blue);box-shadow:0 0 0 3px rgba(59,126,255,.18)}
 .sfield input::placeholder{color:var(--text3)}
 .srow{display:grid;grid-template-columns:1fr 1fr;gap:10px}
-.form-err{font-size:12.5px;color:#f87171;background:var(--red-dim);border-radius:8px;padding:9px 12px;margin-bottom:12px;display:none}
-.sheet-actions{display:flex;gap:10px;padding:12px 18px 18px;border-top:0.5px solid var(--border)}
+.ferr{font-size:12.5px;color:#f87171;background:var(--red-d);border-radius:8px;padding:9px 12px;margin-bottom:12px;display:none}
+.sheet-foot{display:flex;gap:10px;padding:12px 18px 18px;border-top:0.5px solid var(--border)}
 .btn-cancel{flex:1;padding:13px;background:var(--surface2);border:none;color:var(--text2);border-radius:12px;font-size:15px;cursor:pointer;font-family:inherit;font-weight:500}
 .btn-save{flex:2;padding:13px;background:var(--blue);border:none;color:#fff;border-radius:12px;font-size:15px;font-weight:600;cursor:pointer;font-family:inherit}
 
-/* TOAST */
-#toast{position:fixed;bottom:calc(80px + var(--safe-bottom) + 12px);left:50%;transform:translateX(-50%) translateY(16px);background:#1e1e1e;border:0.5px solid var(--border2);color:var(--text);font-size:13.5px;padding:10px 18px;border-radius:30px;white-space:nowrap;z-index:300;opacity:0;transition:opacity .25s,transform .25s;pointer-events:none}
-#toast.show{opacity:1;transform:translateX(-50%) translateY(0)}
+/* URL PANEL */
+.url-panel{background:var(--surface);border:0.5px solid var(--border2);border-radius:12px;padding:14px;margin-top:10px;display:none}
+.url-panel.show{display:block}
+.url-label{font-size:11px;color:var(--text3);text-transform:uppercase;letter-spacing:.5px;margin-bottom:8px}
+.url-box{display:flex;align-items:center;gap:8px;background:var(--surface2);border:0.5px solid var(--border2);border-radius:8px;padding:10px 12px;font-size:12px;color:var(--text2);word-break:break-all;line-height:1.4}
+.url-copy{flex-shrink:0;padding:6px 12px;background:var(--blue-d);color:var(--blue);border:none;border-radius:6px;font-size:12px;font-weight:500;cursor:pointer;font-family:inherit;white-space:nowrap}
+.url-wa{width:100%;margin-top:8px;padding:10px;background:var(--wa-d);color:var(--wa);border:none;border-radius:8px;font-size:13px;font-weight:500;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px}
+
+@media(max-width:360px){.srow{grid-template-columns:1fr}}
 </style>
 </head>
 <body>
 
-<!-- SPLASH -->
-<div id="splash">
-  <div class="splash-icon">
+<!-- VISTA INDIVIDUAL (cuando se abre con ?id=nombre) -->
+<div id="card-view">
+  <div class="single-card" id="single-card">
+    <div class="single-top">
+      <div class="single-info">
+        <div class="single-name" id="s-name"></div>
+        <div class="single-role" id="s-role"></div>
+        <div class="single-company" id="s-company"></div>
+      </div>
+      <div class="single-qr" id="s-qr"></div>
+    </div>
+    <div class="single-div"></div>
+    <div class="single-contacts" id="s-contacts"></div>
+    <div class="single-actions">
+      <button class="sbtn sbtn-green" id="s-vcf" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>
+        Guardar contacto
+      </button>
+      <button class="sbtn sbtn-blue" id="s-qrdl" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>
+        Descargar QR
+      </button>
+    </div>
+    <p class="install-tip">Escanea el QR con la cámara · Para instalar como app: Compartir → Añadir a pantalla de inicio</p>
+  </div>
+</div>
+
+<!-- PANTALLA PIN -->
+<div id="pin-screen">
+  <div class="logo">
     <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
       <rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2.2"/>
       <path d="M15 9h3M15 13h2M7.5 16c0-1 .9-1.8 1.8-1.8h1.4c1 0 1.8.8 1.8 1.8"/>
     </svg>
   </div>
-  <h1>Tarjetas Digitales</h1>
-  <p>Tu equipo en un escaneo</p>
+  <h1 class="pin-title">CONALCA</h1>
+  <p class="pin-sub">Panel de administración</p>
+  <div class="pin-dots">
+    <div class="pin-dot" id="d0"></div><div class="pin-dot" id="d1"></div>
+    <div class="pin-dot" id="d2"></div><div class="pin-dot" id="d3"></div>
+  </div>
+  <div class="pin-grid">
+    <button class="pin-key" data-n="1" type="button">1</button>
+    <button class="pin-key" data-n="2" type="button">2</button>
+    <button class="pin-key" data-n="3" type="button">3</button>
+    <button class="pin-key" data-n="4" type="button">4</button>
+    <button class="pin-key" data-n="5" type="button">5</button>
+    <button class="pin-key" data-n="6" type="button">6</button>
+    <button class="pin-key" data-n="7" type="button">7</button>
+    <button class="pin-key" data-n="8" type="button">8</button>
+    <button class="pin-key" data-n="9" type="button">9</button>
+    <button class="pin-key wide" data-n="0" type="button">0</button>
+    <button class="pin-key del" id="pin-del" type="button">⌫</button>
+  </div>
+  <p class="pin-err" id="pin-err"></p>
+  <button class="pin-skip" id="pin-skip" type="button">Solo ver las tarjetas →</button>
 </div>
 
-<!-- PIN MODAL -->
-<div class="pin-overlay" id="pin-overlay">
-  <div class="pin-box">
-    <h2>Acceso admin</h2>
-    <p>Ingresa el PIN para gestionar todas las tarjetas</p>
-    <div class="pin-dots" id="pin-dots">
-      <div class="pin-dot" id="d0"></div>
-      <div class="pin-dot" id="d1"></div>
-      <div class="pin-dot" id="d2"></div>
-      <div class="pin-dot" id="d3"></div>
+<!-- APP ADMIN -->
+<div id="app" class="hide">
+  <div class="topbar">
+    <div>
+      <h1 id="topbar-title">CONALCA</h1>
+      <p id="subtitle">—</p>
     </div>
-    <div class="pin-grid" id="pin-grid">
-      <button class="pin-key" data-n="1" type="button">1</button>
-      <button class="pin-key" data-n="2" type="button">2</button>
-      <button class="pin-key" data-n="3" type="button">3</button>
-      <button class="pin-key" data-n="4" type="button">4</button>
-      <button class="pin-key" data-n="5" type="button">5</button>
-      <button class="pin-key" data-n="6" type="button">6</button>
-      <button class="pin-key" data-n="7" type="button">7</button>
-      <button class="pin-key" data-n="8" type="button">8</button>
-      <button class="pin-key" data-n="9" type="button">9</button>
-      <button class="pin-key wide" data-n="0" type="button">0</button>
-      <button class="pin-key del" id="pin-del" type="button">⌫</button>
+    <div class="topbar-right">
+      <button class="btn-icon ghost" id="btn-exit" type="button">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M9 21H5a2 2 0 0 1-2-2V5a2 2 0 0 1 2-2h4"/><polyline points="16 17 21 12 16 7"/><line x1="21" y1="12" x2="9" y2="12"/></svg>
+      </button>
+      <button class="btn-icon primary" id="btn-add" type="button" style="display:none">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round"><line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/></svg>
+      </button>
     </div>
-    <p class="pin-err" id="pin-err"></p>
-    <button class="pin-cancel" id="pin-cancel" type="button">Cancelar</button>
+  </div>
+  <div id="content">
+    <div class="empty" id="empty" style="display:none">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2"><rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/><path d="M15 9h2M15 13h2M7 16c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2"/></svg>
+      <h3>Sin tarjetas</h3>
+      <p>Toca el + para agregar</p>
+    </div>
+    <div class="cards-list" id="cards-list"></div>
   </div>
 </div>
-
-<!-- SCREENS -->
-<div id="screens">
-
-  <!-- PANTALLA: TARJETAS -->
-  <div class="screen active" id="screen-cards">
-    <div class="topbar">
-      <div class="topbar-info">
-        <h1>Mi equipo <span id="admin-badge" class="admin-badge" style="display:none">
-          <svg width="11" height="11" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5"><path d="M12 22s8-4 8-10V5l-8-3-8 3v7c0 6 8 10 8 10z"/></svg>Admin
-        </span></h1>
-        <p id="subtitle">Cargando...</p>
-      </div>
-      <div class="topbar-actions">
-        <button class="btn-icon ghost" id="btn-lock" type="button" aria-label="Entrar como admin" title="Panel de administración">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round">
-            <rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/>
-          </svg>
-        </button>
-        <button class="btn-icon" id="btn-add" type="button" aria-label="Agregar persona" style="display:none">
-          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2.5" stroke-linecap="round">
-            <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
-          </svg>
-        </button>
-      </div>
-    </div>
-    <div id="empty" class="empty">
-      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.2">
-        <rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/>
-        <path d="M15 9h2M15 13h2M7 16c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2"/>
-      </svg>
-      <h3>Sin tarjetas todavía</h3>
-      <p>Entra como admin con el candado 🔒 para agregar personas</p>
-    </div>
-    <div class="list-content" id="cards-list"></div>
-  </div>
-
-</div>
-
-<!-- NAV -->
-<nav id="nav">
-  <button class="nav-item active" type="button">
-    <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8" stroke-linecap="round">
-      <rect x="3" y="4" width="18" height="16" rx="3"/><circle cx="9" cy="10" r="2"/>
-      <path d="M15 9h2M15 13h2M7 16c0-1.1.9-2 2-2h2a2 2 0 0 1 2 2"/>
-    </svg>
-    Tarjetas
-  </button>
-</nav>
 
 <!-- SHEET FORMULARIO -->
-<div class="sheet-overlay" id="sheet-overlay"></div>
+<div class="overlay" id="overlay"></div>
 <div class="sheet" id="sheet">
   <div class="sheet-handle"></div>
-  <div class="sheet-title" id="sheet-title">Nueva tarjeta</div>
+  <div class="sheet-head" id="sheet-head">Nueva tarjeta</div>
   <div class="sheet-body">
-    <p class="form-err" id="form-err">Completa el nombre y el teléfono.</p>
+    <p class="ferr" id="ferr">Completa el nombre y el teléfono.</p>
     <div class="srow">
-      <div class="sfield"><label>Nombre *</label><input type="text" id="f-nombre" placeholder="María" autocomplete="off" autocorrect="off"/></div>
-      <div class="sfield"><label>Apellido</label><input type="text" id="f-apellido" placeholder="González" autocomplete="off" autocorrect="off"/></div>
+      <div class="sfield"><label>Nombre *</label><input type="text" id="f-nombre" placeholder="María" autocomplete="off"/></div>
+      <div class="sfield"><label>Apellido</label><input type="text" id="f-apellido" placeholder="González" autocomplete="off"/></div>
     </div>
-    <div class="sfield"><label>Cargo</label><input type="text" id="f-cargo" placeholder="Directora Comercial" autocomplete="off" autocorrect="off"/></div>
-    <div class="sfield"><label>Empresa</label><input type="text" id="f-empresa" placeholder="Mi empresa S.A.S." autocomplete="off" autocorrect="off"/></div>
+    <div class="sfield"><label>Cargo</label><input type="text" id="f-cargo" placeholder="Gerente de Cuenta" autocomplete="off"/></div>
+    <div class="sfield"><label>Empresa</label><input type="text" id="f-empresa" placeholder="CONALCA S.A.S." autocomplete="off"/></div>
     <div class="sfield"><label>Teléfono *</label><input type="tel" id="f-telefono" placeholder="+57 300 000 0000" inputmode="tel"/></div>
-    <div class="sfield"><label>Correo</label><input type="email" id="f-correo" placeholder="correo@empresa.com" inputmode="email"/></div>
-    <div class="sfield"><label>Sitio web</label><input type="text" id="f-web" placeholder="www.miempresa.com" autocomplete="off" inputmode="url"/></div>
+    <div class="sfield"><label>Correo</label><input type="email" id="f-correo" placeholder="correo@conalca.com.co" inputmode="email"/></div>
+    <div class="sfield"><label>Sitio web</label><input type="text" id="f-web" placeholder="www.conalca.com.co" autocomplete="off"/></div>
   </div>
-  <div class="sheet-actions">
+  <div class="sheet-foot">
     <button class="btn-cancel" id="btn-cancel" type="button">Cancelar</button>
     <button class="btn-save" id="btn-save" type="button">Guardar</button>
   </div>
@@ -250,193 +262,59 @@ body{background:var(--bg);font-family:-apple-system,BlinkMacSystemFont,"SF Pro T
 <div id="toast"></div>
 
 <script>
-/* ================================================================
-   MOTOR QR — JS PURO, SIN DEPENDENCIAS, FUNCIONA OFFLINE
-   ================================================================ */
-var QRMaker=(function(){
-  var EX=new Array(256),LG=new Array(256);
-  for(var i=0;i<8;i++)EX[i]=1<<i;
-  for(var i=8;i<256;i++)EX[i]=EX[i-4]^EX[i-5]^EX[i-6]^EX[i-8];
-  for(var i=0;i<255;i++)LG[EX[i]]=i;
-  function gx(n){while(n<0)n+=255;while(n>=256)n-=255;return EX[n];}
-  function gl(n){if(n<1)throw 0;return LG[n];}
-  function Poly(a,s){var o=0;while(o<a.length&&a[o]===0)o++;this.v=new Array(a.length-o+s);for(var i=0;i<a.length-o;i++)this.v[i]=a[i+o];for(var i=0;i<s;i++)this.v[a.length-o+i]=0;}
-  Poly.prototype={g:function(i){return this.v[i];},l:function(){return this.v.length;},
-    mul:function(e){var n=new Array(this.l()+e.l()-1);for(var i=0;i<n.length;i++)n[i]=0;for(var i=0;i<this.l();i++)for(var j=0;j<e.l();j++)n[i+j]^=gx(gl(this.g(i))+gl(e.g(j)));return new Poly(n,0);},
-    mod:function(e){if(this.l()-e.l()<0)return this;var r=gl(this.g(0))-gl(e.g(0));var n=this.v.slice();for(var i=0;i<e.l();i++)n[i]^=gx(gl(e.g(i))+r);return new Poly(n,0).mod(e);}};
-  function ecp(n){var e=new Poly([1],0);for(var i=0;i<n;i++)e=e.mul(new Poly([1,gx(i)],0));return e;}
-  var PPT=[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94]];
-  var G15=(1<<10)|(1<<8)|(1<<5)|(1<<4)|(1<<2)|(1<<1)|1,G18=(1<<12)|(1<<11)|(1<<10)|(1<<9)|(1<<8)|(1<<5)|(1<<2)|1,G15M=(1<<14)|(1<<12)|(1<<10)|(1<<4)|(1<<1);
-  function bd(d){var x=0;while(d!==0){x++;d>>>=1;}return x;}
-  function bchTI(d){var r=d<<10;while(bd(r)-bd(G15)>=0)r^=(G15<<(bd(r)-bd(G15)));return((d<<10)|r)^G15M;}
-  function bchTN(d){var r=d<<12;while(bd(r)-bd(G18)>=0)r^=(G18<<(bd(r)-bd(G18)));return(d<<12)|r;}
-  function mk(p,r,c){switch(p){case 0:return(r+c)%2===0;case 1:return r%2===0;case 2:return c%3===0;case 3:return(r+c)%3===0;case 4:return(Math.floor(r/2)+Math.floor(c/3))%2===0;case 5:return(r*c)%2+(r*c)%3===0;case 6:return((r*c)%2+(r*c)%3)%2===0;case 7:return((r*c)%3+(r+c)%2)%2===0;}}
-  var RSM=[[1,26,16],[1,44,28],[1,70,44],[2,50,32],[2,67,43],[4,43,27],[4,49,31],[2,60,38,2,61,39],[3,58,36,2,59,37],[4,69,43,1,70,44],[1,80,50,4,81,51],[6,58,36,2,59,37],[8,59,37,1,60,38],[4,64,40,5,65,41],[5,65,41,5,66,42],[7,73,45,3,74,46],[10,74,46,1,75,47],[9,69,43,4,70,44],[3,70,44,11,71,45],[3,67,41,13,68,42],[4,69,43,1,70,44]];
-  function rsb(tn){var t=RSM[tn-1],n=t.length/3,l=[];for(var i=0;i<n;i++){var c=t[i*3],tc=t[i*3+1],dc=t[i*3+2];for(var j=0;j<c;j++)l.push({tc:tc,dc:dc});}return l;}
-  function BB(){this.b=[];this.n=0;}
-  BB.prototype={put:function(v,l){for(var i=0;i<l;i++)this.bit(((v>>>(l-i-1))&1)===1);},bit:function(b){var i=Math.floor(this.n/8);if(this.b.length<=i)this.b.push(0);if(b)this.b[i]|=(0x80>>>(this.n%8));this.n++;}};
-  function utf8(s){var b=[];for(var i=0;i<s.length;i++){var c=s.charCodeAt(i);if(c<0x80)b.push(c);else if(c<0x800)b.push(0xC0|(c>>6),0x80|(c&0x3F));else b.push(0xE0|(c>>12),0x80|((c>>6)&0x3F),0x80|(c&0x3F));}return b;}
-  function makeData(tn,bytes){
-    var blocks=rsb(tn),buf=new BB();
-    buf.put(4,4);buf.put(bytes.length,8);
-    for(var i=0;i<bytes.length;i++)buf.put(bytes[i],8);
-    var tdc=0;for(var i=0;i<blocks.length;i++)tdc+=blocks[i].dc;
-    if(buf.n+4<=tdc*8)buf.put(0,4);
-    while(buf.n%8!==0)buf.bit(false);
-    while(buf.n<tdc*8){buf.put(0xEC,8);if(buf.n<tdc*8)buf.put(0x11,8);}
-    var off=0,mdc=0,mec=0,dc=[],ec=[];
-    for(var r=0;r<blocks.length;r++){var dcc=blocks[r].dc,ecc=blocks[r].tc-dcc;mdc=Math.max(mdc,dcc);mec=Math.max(mec,ecc);dc[r]=[];for(var i=0;i<dcc;i++)dc[r].push(0xff&buf.b[i+off]);off+=dcc;var rp=ecp(ecc),raw=new Poly(dc[r],rp.l()-1),mp=raw.mod(rp);ec[r]=[];for(var i=0;i<rp.l()-1;i++){var mi=i+mp.l()-(rp.l()-1);ec[r].push(mi>=0?mp.g(mi):0);}}
-    var tot=0;for(var i=0;i<blocks.length;i++)tot+=blocks[i].tc;
-    var data=new Array(tot),idx=0;
-    for(var i=0;i<mdc;i++)for(var r=0;r<blocks.length;r++)if(i<dc[r].length)data[idx++]=dc[r][i];
-    for(var i=0;i<mec;i++)for(var r=0;r<blocks.length;r++)if(i<ec[r].length)data[idx++]=ec[r][i];
-    return data;
-  }
-  function buildMatrix(tn,mp,data){
-    var mc=tn*4+17,m=[];
-    for(var r=0;r<mc;r++){m[r]=[];for(var c=0;c<mc;c++)m[r][c]=null;}
-    function probe(row,col){for(var r=-1;r<=7;r++){if(row+r<0||mc<=row+r)continue;for(var c=-1;c<=7;c++){if(col+c<0||mc<=col+c)continue;m[row+r][col+c]=(r>=0&&r<=6&&(c===0||c===6))||(c>=0&&c<=6&&(r===0||r===6))||(r>=2&&r<=4&&c>=2&&c<=4);}}}
-    probe(0,0);probe(mc-7,0);probe(0,mc-7);
-    for(var r=8;r<mc-8;r++)if(m[r][6]===null)m[r][6]=(r%2===0);
-    for(var c=8;c<mc-8;c++)if(m[6][c]===null)m[6][c]=(c%2===0);
-    var pos=PPT[tn-1]||[];
-    for(var i=0;i<pos.length;i++)for(var j=0;j<pos.length;j++){var rr=pos[i],cc=pos[j];if(m[rr][cc]!==null)continue;for(var dr=-2;dr<=2;dr++)for(var dc2=-2;dc2<=2;dc2++)m[rr+dr][cc+dc2]=(dr===-2||dr===2||dc2===-2||dc2===2||(dr===0&&dc2===0));}
-    var bits=bchTI((0<<3)|mp);
-    for(var i=0;i<15;i++){var v=!!(bits>>i&1);if(i<6)m[i][8]=v;else if(i<8)m[i+1][8]=v;else m[mc-15+i][8]=v;}
-    for(var i=0;i<15;i++){var v=!!(bits>>i&1);if(i<8)m[8][mc-i-1]=v;else if(i<9)m[8][15-i]=v;else m[8][15-i-1]=v;}
-    m[mc-8][8]=true;
-    if(tn>=7){var tnb=bchTN(tn);for(var i=0;i<18;i++){var v=!!(tnb>>i&1);m[Math.floor(i/3)][i%3+mc-11]=v;m[i%3+mc-11][Math.floor(i/3)]=v;}}
-    var inc=-1,row=mc-1,bi=7,by=0;
-    for(var col=mc-1;col>0;col-=2){
-      if(col===6)col--;
-      while(true){for(var c=0;c<2;c++){if(m[row][col-c]===null){var dk=false;if(by<data.length)dk=!!(data[by]>>>bi&1);if(mk(mp,row,col-c))dk=!dk;m[row][col-c]=dk;bi--;if(bi===-1){by++;bi=7;}}}row+=inc;if(row<0||mc<=row){row-=inc;inc=-inc;break;}}
-    }
-    return m;
-  }
-  function lp(m,mc){var t=0;for(var r=0;r<mc-1;r++)for(var c=0;c<mc-1;c++){var cnt=(m[r][c]?1:0)+(m[r+1][c]?1:0)+(m[r][c+1]?1:0)+(m[r+1][c+1]?1:0);if(cnt===0||cnt===4)t+=3;}return t;}
-  function bestMask(tn,data){var best=0,bl=1e9;for(var i=0;i<8;i++){var mat=buildMatrix(tn,i,data),mc2=tn*4+17;var l=lp(mat,mc2);if(l<bl){bl=l;best=i;}}return best;}
-  var CAP=[0,16,28,44,64,86,108,124,154,182,216,254,290,334,365,415,453,507,563,627,669,714];
-  function minType(n){for(var t=1;t<=21;t++)if(CAP[t]>=n)return t;throw new Error('Muy largo');}
-  return{
-    svg:function(text,px){
-      px=px||64;
-      var bytes=utf8(text);var tn=minType(bytes.length);
-      var data=makeData(tn,bytes);var mp=bestMask(tn,data);
-      var mat=buildMatrix(tn,mp,data);var mc=tn*4+17,mg=4,tot=mc+mg*2;
-      var cell=px/tot,d='';
-      for(var r=0;r<mc;r++)for(var c=0;c<mc;c++){if(mat[r][c]){var x=((c+mg)*cell).toFixed(2),y=((r+mg)*cell).toFixed(2),s=cell.toFixed(2);d+='M'+x+','+y+'h'+s+'v'+s+'h-'+s+'Z';}}
-      return'<svg xmlns="http://www.w3.org/2000/svg" width="'+px+'" height="'+px+'" viewBox="0 0 '+px+' '+px+'" shape-rendering="crispEdges"><rect width="'+px+'" height="'+px+'" fill="#fff"/><path d="'+d+'" fill="#000"/></svg>';
-    }
-  };
-})();
+var QRCode;!function(){function a(a){this.mode=c.MODE_8BIT_BYTE,this.data=a,this.parsedData=[];for(var b=[],d=0,e=this.data.length;e>d;d++){var f=this.data.charCodeAt(d);f>65536?(b[0]=240|(1835008&f)>>>18,b[1]=128|(258048&f)>>>12,b[2]=128|(4032&f)>>>6,b[3]=128|63&f):f>2048?(b[0]=224|(61440&f)>>>12,b[1]=128|(4032&f)>>>6,b[2]=128|63&f):f>128?(b[0]=192|(1984&f)>>>6,b[1]=128|63&f):b[0]=f,this.parsedData=this.parsedData.concat(b)}this.parsedData.length!=this.data.length&&(this.parsedData.unshift(191),this.parsedData.unshift(187),this.parsedData.unshift(239))}function b(a,b){this.typeNumber=a,this.errorCorrectLevel=b,this.modules=null,this.moduleCount=0,this.dataCache=null,this.dataList=[]}function i(a,b){if(void 0==a.length)throw new Error(a.length+"/"+b);for(var c=0;c<a.length&&0==a[c];)c++;this.num=new Array(a.length-c+b);for(var d=0;d<a.length-c;d++)this.num[d]=a[d+c]}function j(a,b){this.totalCount=a,this.dataCount=b}function k(){this.buffer=[],this.length=0}function m(){return"undefined"!=typeof CanvasRenderingContext2D}function n(){var a=!1,b=navigator.userAgent;return/android/i.test(b)&&(a=!0,aMat=b.toString().match(/android ([0-9]\.[0-9])/i),aMat&&aMat[1]&&(a=parseFloat(aMat[1]))),a}function r(a,b){for(var c=1,e=s(a),f=0,g=l.length;g>=f;f++){var h=0;switch(b){case d.L:h=l[f][0];break;case d.M:h=l[f][1];break;case d.Q:h=l[f][2];break;case d.H:h=l[f][3]}if(h>=e)break;c++}if(c>l.length)throw new Error("Too long data");return c}function s(a){var b=encodeURI(a).toString().replace(/\%[0-9a-fA-F]{2}/g,"a");return b.length+(b.length!=a?3:0)}a.prototype={getLength:function(){return this.parsedData.length},write:function(a){for(var b=0,c=this.parsedData.length;c>b;b++)a.put(this.parsedData[b],8)}},b.prototype={addData:function(b){var c=new a(b);this.dataList.push(c),this.dataCache=null},isDark:function(a,b){if(0>a||this.moduleCount<=a||0>b||this.moduleCount<=b)throw new Error(a+","+b);return this.modules[a][b]},getModuleCount:function(){return this.moduleCount},make:function(){this.makeImpl(!1,this.getBestMaskPattern())},makeImpl:function(a,c){this.moduleCount=4*this.typeNumber+17,this.modules=new Array(this.moduleCount);for(var d=0;d<this.moduleCount;d++){this.modules[d]=new Array(this.moduleCount);for(var e=0;e<this.moduleCount;e++)this.modules[d][e]=null}this.setupPositionProbePattern(0,0),this.setupPositionProbePattern(this.moduleCount-7,0),this.setupPositionProbePattern(0,this.moduleCount-7),this.setupPositionAdjustPattern(),this.setupTimingPattern(),this.setupTypeInfo(a,c),this.typeNumber>=7&&this.setupTypeNumber(a),null==this.dataCache&&(this.dataCache=b.createData(this.typeNumber,this.errorCorrectLevel,this.dataList)),this.mapData(this.dataCache,c)},setupPositionProbePattern:function(a,b){for(var c=-1;7>=c;c++)if(!(-1>=a+c||this.moduleCount<=a+c))for(var d=-1;7>=d;d++)-1>=b+d||this.moduleCount<=b+d||(this.modules[a+c][b+d]=c>=0&&6>=c&&(0==d||6==d)||d>=0&&6>=d&&(0==c||6==c)||c>=2&&4>=c&&d>=2&&4>=d?!0:!1)},getBestMaskPattern:function(){for(var a=0,b=0,c=0;8>c;c++){this.makeImpl(!0,c);var d=f.getLostPoint(this);(0==c||a>d)&&(a=d,b=c)}return b},createMovieClip:function(a,b,c){var d=a.createEmptyMovieClip(b,c),e=1;this.make();for(var f=0;f<this.modules.length;f++)for(var g=f*e,h=0;h<this.modules[f].length;h++){var i=h*e,j=this.modules[f][h];j&&(d.beginFill(0,100),d.moveTo(i,g),d.lineTo(i+e,g),d.lineTo(i+e,g+e),d.lineTo(i,g+e),d.endFill())}return d},setupTimingPattern:function(){for(var a=8;a<this.moduleCount-8;a++)null==this.modules[a][6]&&(this.modules[a][6]=0==a%2);for(var b=8;b<this.moduleCount-8;b++)null==this.modules[6][b]&&(this.modules[6][b]=0==b%2)},setupPositionAdjustPattern:function(){for(var a=f.getPatternPosition(this.typeNumber),b=0;b<a.length;b++)for(var c=0;c<a.length;c++){var d=a[b],e=a[c];if(null==this.modules[d][e])for(var g=-2;2>=g;g++)for(var h=-2;2>=h;h++)this.modules[d+g][e+h]=-2==g||2==g||-2==h||2==h||0==g&&0==h?!0:!1}},setupTypeNumber:function(a){for(var b=f.getBCHTypeNumber(this.typeNumber),c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[Math.floor(c/3)][c%3+this.moduleCount-8-3]=d}for(var c=0;18>c;c++){var d=!a&&1==(1&b>>c);this.modules[c%3+this.moduleCount-8-3][Math.floor(c/3)]=d}},setupTypeInfo:function(a,b){for(var c=this.errorCorrectLevel<<3|b,d=f.getBCHTypeInfo(c),e=0;15>e;e++){var g=!a&&1==(1&d>>e);6>e?this.modules[e][8]=g:8>e?this.modules[e+1][8]=g:this.modules[this.moduleCount-15+e][8]=g}for(var e=0;15>e;e++){var g=!a&&1==(1&d>>e);8>e?this.modules[8][this.moduleCount-e-1]=g:9>e?this.modules[8][15-e-1+1]=g:this.modules[8][15-e-1]=g}this.modules[this.moduleCount-8][8]=!a},mapData:function(a,b){for(var c=-1,d=this.moduleCount-1,e=7,g=0,h=this.moduleCount-1;h>0;h-=2)for(6==h&&h--;;){for(var i=0;2>i;i++)if(null==this.modules[d][h-i]){var j=!1;g<a.length&&(j=1==(1&a[g]>>>e));var k=f.getMask(b,d,h-i);k&&(j=!j),this.modules[d][h-i]=j,e--,-1==e&&(g++,e=7)}if(d+=c,0>d||this.moduleCount<=d){d-=c,c=-c;break}}}},b.PAD0=236,b.PAD1=17,b.createData=function(a,c,d){for(var e=j.getRSBlocks(a,c),g=new k,h=0;h<d.length;h++){var i=d[h];g.put(i.mode,4),g.put(i.getLength(),f.getLengthInBits(i.mode,a)),i.write(g)}for(var l=0,h=0;h<e.length;h++)l+=e[h].dataCount;if(g.getLengthInBits()>8*l)throw new Error("code length overflow. ("+g.getLengthInBits()+">"+8*l+")");for(g.getLengthInBits()+4<=8*l&&g.put(0,4);0!=g.getLengthInBits()%8;)g.putBit(!1);for(;;){if(g.getLengthInBits()>=8*l)break;if(g.put(b.PAD0,8),g.getLengthInBits()>=8*l)break;g.put(b.PAD1,8)}return b.createBytes(g,e)},b.createBytes=function(a,b){for(var c=0,d=0,e=0,g=new Array(b.length),h=new Array(b.length),j=0;j<b.length;j++){var k=b[j].dataCount,l=b[j].totalCount-k;d=Math.max(d,k),e=Math.max(e,l),g[j]=new Array(k);for(var m=0;m<g[j].length;m++)g[j][m]=255&a.buffer[m+c];c+=k;var n=f.getErrorCorrectPolynomial(l),o=new i(g[j],n.getLength()-1),p=o.mod(n);h[j]=new Array(n.getLength()-1);for(var m=0;m<h[j].length;m++){var q=m+p.getLength()-h[j].length;h[j][m]=q>=0?p.get(q):0}}for(var r=0,m=0;m<b.length;m++)r+=b[m].totalCount;for(var s=new Array(r),t=0,m=0;d>m;m++)for(var j=0;j<b.length;j++)m<g[j].length&&(s[t++]=g[j][m]);for(var m=0;e>m;m++)for(var j=0;j<b.length;j++)m<h[j].length&&(s[t++]=h[j][m]);return s};for(var c={MODE_NUMBER:1,MODE_ALPHA_NUM:2,MODE_8BIT_BYTE:4,MODE_KANJI:8},d={L:1,M:0,Q:3,H:2},e={PATTERN000:0,PATTERN001:1,PATTERN010:2,PATTERN011:3,PATTERN100:4,PATTERN101:5,PATTERN110:6,PATTERN111:7},f={PATTERN_POSITION_TABLE:[[],[6,18],[6,22],[6,26],[6,30],[6,34],[6,22,38],[6,24,42],[6,26,46],[6,28,50],[6,30,54],[6,32,58],[6,34,62],[6,26,46,66],[6,26,48,70],[6,26,50,74],[6,30,54,78],[6,30,56,82],[6,30,58,86],[6,34,62,90],[6,28,50,72,94],[6,26,50,74,98],[6,30,54,78,102],[6,28,54,80,106],[6,32,58,84,110],[6,30,58,86,114],[6,34,62,90,118],[6,26,50,74,98,122],[6,30,54,78,102,126],[6,26,52,78,104,130],[6,30,56,82,108,134],[6,34,60,86,112,138],[6,30,58,86,114,142],[6,34,62,90,118,146],[6,30,54,78,102,126,150],[6,24,50,76,102,128,154],[6,28,54,80,106,132,158],[6,32,58,84,110,136,162],[6,26,54,82,110,138,166],[6,30,58,86,114,142,170]],G15:1335,G18:7973,G15_MASK:21522,getBCHTypeInfo:function(a){for(var b=a<<10;f.getBCHDigit(b)-f.getBCHDigit(f.G15)>=0;)b^=f.G15<<f.getBCHDigit(b)-f.getBCHDigit(f.G15);return(a<<10|b)^f.G15_MASK},getBCHTypeNumber:function(a){for(var b=a<<12;f.getBCHDigit(b)-f.getBCHDigit(f.G18)>=0;)b^=f.G18<<f.getBCHDigit(b)-f.getBCHDigit(f.G18);return a<<12|b},getBCHDigit:function(a){for(var b=0;0!=a;)b++,a>>>=1;return b},getPatternPosition:function(a){return f.PATTERN_POSITION_TABLE[a-1]},getMask:function(a,b,c){switch(a){case e.PATTERN000:return 0==(b+c)%2;case e.PATTERN001:return 0==b%2;case e.PATTERN010:return 0==c%3;case e.PATTERN011:return 0==(b+c)%3;case e.PATTERN100:return 0==(Math.floor(b/2)+Math.floor(c/3))%2;case e.PATTERN101:return 0==b*c%2+b*c%3;case e.PATTERN110:return 0==(b*c%2+b*c%3)%2;case e.PATTERN111:return 0==(b*c%3+(b+c)%2)%2;default:throw new Error("bad maskPattern:"+a)}},getErrorCorrectPolynomial:function(a){for(var b=new i([1],0),c=0;a>c;c++)b=b.multiply(new i([1,g.gexp(c)],0));return b},getLengthInBits:function(a,b){if(b>=1&&10>b)switch(a){case c.MODE_NUMBER:return 10;case c.MODE_ALPHA_NUM:return 9;case c.MODE_8BIT_BYTE:return 8;case c.MODE_KANJI:return 8;default:throw new Error("mode:"+a)}else if(27>b)switch(a){case c.MODE_NUMBER:return 12;case c.MODE_ALPHA_NUM:return 11;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 10;default:throw new Error("mode:"+a)}else{if(!(41>b))throw new Error("type:"+b);switch(a){case c.MODE_NUMBER:return 14;case c.MODE_ALPHA_NUM:return 13;case c.MODE_8BIT_BYTE:return 16;case c.MODE_KANJI:return 12;default:throw new Error("mode:"+a)}}},getLostPoint:function(a){for(var b=a.getModuleCount(),c=0,d=0;b>d;d++)for(var e=0;b>e;e++){for(var f=0,g=a.isDark(d,e),h=-1;1>=h;h++)if(!(0>d+h||d+h>=b))for(var i=-1;1>=i;i++)0>e+i||e+i>=b||(0!=h||0!=i)&&g==a.isDark(d+h,e+i)&&f++;f>5&&(c+=3+f-5)}for(var d=0;b-1>d;d++)for(var e=0;b-1>e;e++){var j=0;a.isDark(d,e)&&j++,a.isDark(d+1,e)&&j++,a.isDark(d,e+1)&&j++,a.isDark(d+1,e+1)&&j++,(0==j||4==j)&&(c+=3)}for(var d=0;b>d;d++)for(var e=0;b-6>e;e++)a.isDark(d,e)&&!a.isDark(d,e+1)&&a.isDark(d,e+2)&&a.isDark(d,e+3)&&a.isDark(d,e+4)&&!a.isDark(d,e+5)&&a.isDark(d,e+6)&&(c+=40);for(var e=0;b>e;e++)for(var d=0;b-6>d;d++)a.isDark(d,e)&&!a.isDark(d+1,e)&&a.isDark(d+2,e)&&a.isDark(d+3,e)&&a.isDark(d+4,e)&&!a.isDark(d+5,e)&&a.isDark(d+6,e)&&(c+=40);for(var k=0,e=0;b>e;e++)for(var d=0;b>d;d++)a.isDark(d,e)&&k++;var l=Math.abs(100*k/b/b-50)/5;return c+=10*l}},g={glog:function(a){if(1>a)throw new Error("glog("+a+")");return g.LOG_TABLE[a]},gexp:function(a){for(;0>a;)a+=255;for(;a>=256;)a-=255;return g.EXP_TABLE[a]},EXP_TABLE:new Array(256),LOG_TABLE:new Array(256)},h=0;8>h;h++)g.EXP_TABLE[h]=1<<h;for(var h=8;256>h;h++)g.EXP_TABLE[h]=g.EXP_TABLE[h-4]^g.EXP_TABLE[h-5]^g.EXP_TABLE[h-6]^g.EXP_TABLE[h-8];for(var h=0;255>h;h++)g.LOG_TABLE[g.EXP_TABLE[h]]=h;i.prototype={get:function(a){return this.num[a]},getLength:function(){return this.num.length},multiply:function(a){for(var b=new Array(this.getLength()+a.getLength()-1),c=0;c<this.getLength();c++)for(var d=0;d<a.getLength();d++)b[c+d]^=g.gexp(g.glog(this.get(c))+g.glog(a.get(d)));return new i(b,0)},mod:function(a){if(this.getLength()-a.getLength()<0)return this;for(var b=g.glog(this.get(0))-g.glog(a.get(0)),c=new Array(this.getLength()),d=0;d<this.getLength();d++)c[d]=this.get(d);for(var d=0;d<a.getLength();d++)c[d]^=g.gexp(g.glog(a.get(d))+b);return new i(c,0).mod(a)}},j.RS_BLOCK_TABLE=[[1,26,19],[1,26,16],[1,26,13],[1,26,9],[1,44,34],[1,44,28],[1,44,22],[1,44,16],[1,70,55],[1,70,44],[2,35,17],[2,35,13],[1,100,80],[2,50,32],[2,50,24],[4,25,9],[1,134,108],[2,67,43],[2,33,15,2,34,16],[2,33,11,2,34,12],[2,86,68],[4,43,27],[4,43,19],[4,43,15],[2,98,78],[4,49,31],[2,32,14,4,33,15],[4,39,13,1,40,14],[2,121,97],[2,60,38,2,61,39],[4,40,18,2,41,19],[4,40,14,2,41,15],[2,146,116],[3,58,36,2,59,37],[4,36,16,4,37,17],[4,36,12,4,37,13],[2,86,68,2,87,69],[4,69,43,1,70,44],[6,43,19,2,44,20],[6,43,15,2,44,16],[4,101,81],[1,80,50,4,81,51],[4,50,22,4,51,23],[3,36,12,8,37,13],[2,116,92,2,117,93],[6,58,36,2,59,37],[4,46,20,6,47,21],[7,42,14,4,43,15],[4,133,107],[8,59,37,1,60,38],[8,44,20,4,45,21],[12,33,11,4,34,12],[3,145,115,1,146,116],[4,64,40,5,65,41],[11,36,16,5,37,17],[11,36,12,5,37,13],[5,109,87,1,110,88],[5,65,41,5,66,42],[5,54,24,7,55,25],[11,36,12],[5,122,98,1,123,99],[7,73,45,3,74,46],[15,43,19,2,44,20],[3,45,15,13,46,16],[1,135,107,5,136,108],[10,74,46,1,75,47],[1,50,22,15,51,23],[2,42,14,17,43,15],[5,150,120,1,151,121],[9,69,43,4,70,44],[17,50,22,1,51,23],[2,42,14,19,43,15],[3,141,113,4,142,114],[3,70,44,11,71,45],[17,47,21,4,48,22],[9,39,13,16,40,14],[3,135,107,5,136,108],[3,67,41,13,68,42],[15,54,24,5,55,25],[15,43,15,10,44,16],[4,144,116,4,145,117],[17,68,42],[17,50,22,6,51,23],[19,46,16,6,47,17],[2,139,111,7,140,112],[17,74,46],[7,54,24,16,55,25],[34,37,13],[4,151,121,5,152,122],[4,75,47,14,76,48],[11,54,24,14,55,25],[16,45,15,14,46,16],[6,147,117,4,148,118],[6,73,45,14,74,46],[11,54,24,16,55,25],[30,46,16,2,47,17],[8,132,106,4,133,107],[8,75,47,13,76,48],[7,54,24,22,55,25],[22,45,15,13,46,16],[10,142,114,2,143,115],[19,74,46,4,75,47],[28,50,22,6,51,23],[33,46,16,4,47,17],[8,152,122,4,153,123],[22,73,45,3,74,46],[8,53,23,26,54,24],[12,45,15,28,46,16],[3,147,117,10,148,118],[3,73,45,23,74,46],[4,54,24,31,55,25],[11,45,15,31,46,16],[7,146,116,7,147,117],[21,73,45,7,74,46],[1,53,23,37,54,24],[19,45,15,26,46,16],[5,145,115,10,146,116],[19,75,47,10,76,48],[15,54,24,25,55,25],[23,45,15,25,46,16],[13,145,115,3,146,116],[2,74,46,29,75,47],[42,54,24,1,55,25],[23,45,15,28,46,16],[17,145,115],[10,74,46,23,75,47],[10,54,24,35,55,25],[19,45,15,35,46,16],[17,145,115,1,146,116],[14,74,46,21,75,47],[29,54,24,19,55,25],[11,45,15,46,46,16],[13,145,115,6,146,116],[14,74,46,23,75,47],[44,54,24,7,55,25],[59,46,16,1,47,17],[12,151,121,7,152,122],[12,75,47,26,76,48],[39,54,24,14,55,25],[22,45,15,41,46,16],[6,151,121,14,152,122],[6,75,47,34,76,48],[46,54,24,10,55,25],[2,45,15,64,46,16],[17,152,122,4,153,123],[29,74,46,14,75,47],[49,54,24,10,55,25],[24,45,15,46,46,16],[4,152,122,18,153,123],[13,74,46,32,75,47],[48,54,24,14,55,25],[42,45,15,32,46,16],[20,147,117,4,148,118],[40,75,47,7,76,48],[43,54,24,22,55,25],[10,45,15,67,46,16],[19,148,118,6,149,119],[18,75,47,31,76,48],[34,54,24,34,55,25],[20,45,15,61,46,16]],j.getRSBlocks=function(a,b){var c=j.getRsBlockTable(a,b);if(void 0==c)throw new Error("bad rs block @ typeNumber:"+a+"/errorCorrectLevel:"+b);for(var d=c.length/3,e=[],f=0;d>f;f++)for(var g=c[3*f+0],h=c[3*f+1],i=c[3*f+2],k=0;g>k;k++)e.push(new j(h,i));return e},j.getRsBlockTable=function(a,b){switch(b){case d.L:return j.RS_BLOCK_TABLE[4*(a-1)+0];case d.M:return j.RS_BLOCK_TABLE[4*(a-1)+1];case d.Q:return j.RS_BLOCK_TABLE[4*(a-1)+2];case d.H:return j.RS_BLOCK_TABLE[4*(a-1)+3];default:return void 0}},k.prototype={get:function(a){var b=Math.floor(a/8);return 1==(1&this.buffer[b]>>>7-a%8)},put:function(a,b){for(var c=0;b>c;c++)this.putBit(1==(1&a>>>b-c-1))},getLengthInBits:function(){return this.length},putBit:function(a){var b=Math.floor(this.length/8);this.buffer.length<=b&&this.buffer.push(0),a&&(this.buffer[b]|=128>>>this.length%8),this.length++}};var l=[[17,14,11,7],[32,26,20,14],[53,42,32,24],[78,62,46,34],[106,84,60,44],[134,106,74,58],[154,122,86,64],[192,152,108,84],[230,180,130,98],[271,213,151,119],[321,251,177,137],[367,287,203,155],[425,331,241,177],[458,362,258,194],[520,412,292,220],[586,450,322,250],[644,504,364,280],[718,560,394,310],[792,624,442,338],[858,666,482,382],[929,711,509,403],[1003,779,565,439],[1091,857,611,461],[1171,911,661,511],[1273,997,715,535],[1367,1059,751,593],[1465,1125,805,625],[1528,1190,868,658],[1628,1264,908,698],[1732,1370,982,742],[1840,1452,1030,790],[1952,1538,1112,842],[2068,1628,1168,898],[2188,1722,1228,958],[2303,1809,1283,983],[2431,1911,1351,1051],[2563,1989,1423,1093],[2699,2099,1499,1139],[2809,2213,1579,1219],[2953,2331,1663,1273]],o=function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){function g(a,b){var c=document.createElementNS("http://www.w3.org/2000/svg",a);for(var d in b)b.hasOwnProperty(d)&&c.setAttribute(d,b[d]);return c}var b=this._htOption,c=this._el,d=a.getModuleCount();Math.floor(b.width/d),Math.floor(b.height/d),this.clear();var h=g("svg",{viewBox:"0 0 "+String(d)+" "+String(d),width:"100%",height:"100%",fill:b.colorLight});h.setAttributeNS("http://www.w3.org/2000/xmlns/","xmlns:xlink","http://www.w3.org/1999/xlink"),c.appendChild(h),h.appendChild(g("rect",{fill:b.colorDark,width:"1",height:"1",id:"template"}));for(var i=0;d>i;i++)for(var j=0;d>j;j++)if(a.isDark(i,j)){var k=g("use",{x:String(i),y:String(j)});k.setAttributeNS("http://www.w3.org/1999/xlink","href","#template"),h.appendChild(k)}},a.prototype.clear=function(){for(;this._el.hasChildNodes();)this._el.removeChild(this._el.lastChild)},a}(),p="svg"===document.documentElement.tagName.toLowerCase(),q=p?o:m()?function(){function a(){this._elImage.src=this._elCanvas.toDataURL("image/png"),this._elImage.style.display="block",this._elCanvas.style.display="none"}function d(a,b){var c=this;if(c._fFail=b,c._fSuccess=a,null===c._bSupportDataURI){var d=document.createElement("img"),e=function(){c._bSupportDataURI=!1,c._fFail&&_fFail.call(c)},f=function(){c._bSupportDataURI=!0,c._fSuccess&&c._fSuccess.call(c)};return d.onabort=e,d.onerror=e,d.onload=f,d.src="data:image/gif;base64,iVBORw0KGgoAAAANSUhEUgAAAAUAAAAFCAYAAACNbyblAAAAHElEQVQI12P4//8/w38GIAXDIBKE0DHxgljNBAAO9TXL0Y4OHwAAAABJRU5ErkJggg==",void 0}c._bSupportDataURI===!0&&c._fSuccess?c._fSuccess.call(c):c._bSupportDataURI===!1&&c._fFail&&c._fFail.call(c)}if(this._android&&this._android<=2.1){var b=1/window.devicePixelRatio,c=CanvasRenderingContext2D.prototype.drawImage;CanvasRenderingContext2D.prototype.drawImage=function(a,d,e,f,g,h,i,j){if("nodeName"in a&&/img/i.test(a.nodeName))for(var l=arguments.length-1;l>=1;l--)arguments[l]=arguments[l]*b;else"undefined"==typeof j&&(arguments[1]*=b,arguments[2]*=b,arguments[3]*=b,arguments[4]*=b);c.apply(this,arguments)}}var e=function(a,b){this._bIsPainted=!1,this._android=n(),this._htOption=b,this._elCanvas=document.createElement("canvas"),this._elCanvas.width=b.width,this._elCanvas.height=b.height,a.appendChild(this._elCanvas),this._el=a,this._oContext=this._elCanvas.getContext("2d"),this._bIsPainted=!1,this._elImage=document.createElement("img"),this._elImage.style.display="none",this._el.appendChild(this._elImage),this._bSupportDataURI=null};return e.prototype.draw=function(a){var b=this._elImage,c=this._oContext,d=this._htOption,e=a.getModuleCount(),f=d.width/e,g=d.height/e,h=Math.round(f),i=Math.round(g);b.style.display="none",this.clear();for(var j=0;e>j;j++)for(var k=0;e>k;k++){var l=a.isDark(j,k),m=k*f,n=j*g;c.strokeStyle=l?d.colorDark:d.colorLight,c.lineWidth=1,c.fillStyle=l?d.colorDark:d.colorLight,c.fillRect(m,n,f,g),c.strokeRect(Math.floor(m)+.5,Math.floor(n)+.5,h,i),c.strokeRect(Math.ceil(m)-.5,Math.ceil(n)-.5,h,i)}this._bIsPainted=!0},e.prototype.makeImage=function(){this._bIsPainted&&d.call(this,a)},e.prototype.isPainted=function(){return this._bIsPainted},e.prototype.clear=function(){this._oContext.clearRect(0,0,this._elCanvas.width,this._elCanvas.height),this._bIsPainted=!1},e.prototype.round=function(a){return a?Math.floor(1e3*a)/1e3:a},e}():function(){var a=function(a,b){this._el=a,this._htOption=b};return a.prototype.draw=function(a){for(var b=this._htOption,c=this._el,d=a.getModuleCount(),e=Math.floor(b.width/d),f=Math.floor(b.height/d),g=['<table style="border:0;border-collapse:collapse;">'],h=0;d>h;h++){g.push("<tr>");for(var i=0;d>i;i++)g.push('<td style="border:0;border-collapse:collapse;padding:0;margin:0;width:'+e+"px;height:"+f+"px;background-color:"+(a.isDark(h,i)?b.colorDark:b.colorLight)+';"></td>');g.push("</tr>")}g.push("</table>"),c.innerHTML=g.join("");var j=c.childNodes[0],k=(b.width-j.offsetWidth)/2,l=(b.height-j.offsetHeight)/2;k>0&&l>0&&(j.style.margin=l+"px "+k+"px")},a.prototype.clear=function(){this._el.innerHTML=""},a}();QRCode=function(a,b){if(this._htOption={width:256,height:256,typeNumber:4,colorDark:"#000000",colorLight:"#ffffff",correctLevel:d.H},"string"==typeof b&&(b={text:b}),b)for(var c in b)this._htOption[c]=b[c];"string"==typeof a&&(a=document.getElementById(a)),this._android=n(),this._el=a,this._oQRCode=null,this._oDrawing=new q(this._el,this._htOption),this._htOption.text&&this.makeCode(this._htOption.text)},QRCode.prototype.makeCode=function(a){this._oQRCode=new b(r(a,this._htOption.correctLevel),this._htOption.correctLevel),this._oQRCode.addData(a),this._oQRCode.make(),this._el.title=a,this._oDrawing.draw(this._oQRCode),this.makeImage()},QRCode.prototype.makeImage=function(){"function"==typeof this._oDrawing.makeImage&&(!this._android||this._android>=3)&&this._oDrawing.makeImage()},QRCode.prototype.clear=function(){this._oDrawing.clear()},QRCode.CorrectLevel=d}();
 
-/* ================================================================
-   APP
-   ================================================================ */
 (function(){
-  var ADMIN_PIN = '1234'; /* ← CAMBIA ESTE PIN */
-  var FIELDS=['nombre','apellido','cargo','empresa','telefono','correo','web'];
-  var people=JSON.parse(localStorage.getItem('tde_people')||'[]');
-  var isAdmin=false;
-  var editIdx=null;
-  var pinBuffer='';
+  var PIN    = '1234';
+  var BASE   = location.origin + location.pathname;
+  var FIELDS = ['nombre','apellido','cargo','empresa','telefono','correo','web'];
+  var PEOPLE_DEFAULT = [{"nombre": "Dagoberto González", "cargo": "Vicepresidente Comercial", "telefono": "+57 311 8559549", "correo": "Dagoberto.gonzalez@conalca.co", "empresa": "CONALCA S.A.S.", "web": "www.conalca.com.co", "id": "dagoberto-gonzalez"}, {"nombre": "Danna Rico", "cargo": "Gerente de Cuenta", "telefono": "+57 318 8557277", "correo": "danna.rico@conalca.com.co", "empresa": "CONALCA S.A.S.", "web": "www.conalca.com.co", "id": "danna-rico"}, {"nombre": "Ginna Barragán", "cargo": "Gerente de Cuenta", "telefono": "+57 317 3317124", "correo": "Ginna.barragan@conalca.com.co", "empresa": "CONALCA S.A.S.", "web": "www.conalca.com.co", "id": "ginna-barragan"}, {"nombre": "Alejandra González", "cargo": "Gerente de Cuenta", "telefono": "+57 315 4820684", "correo": "Alejandra.gonzalez@conalca.com.co", "empresa": "CONALCA S.A.S.", "web": "www.conalca.com.co", "id": "alejandra-gonzalez"}, {"nombre": "Alejandra Guerrero", "cargo": "Gerente de Cuenta", "telefono": "+57 316 0247635", "correo": "Alejandra.guerrero@conalca.com.co", "empresa": "CONALCA S.A.S.", "web": "www.conalca.com.co", "id": "alejandra-guerrero"}, {"nombre": "Verónica Jaramillo", "cargo": "Gerente de Cuenta", "telefono": "+57 318 3541648", "correo": "Veronica.jaramillo@conalca.com.co", "empresa": "CONALCA S.A.S.", "web": "www.conalca.com.co", "id": "veronica-jaramillo"}, {"nombre": "Viviana González", "cargo": "Gerente de Cuenta", "telefono": "+57 315 8863572", "correo": "Viviana.gonzalez@conalca.com.co", "empresa": "CONALCA S.A.S.", "web": "www.conalca.com.co", "id": "viviana-gonzalez"}];
 
-  function el(id){return document.getElementById(id);}
-  function save(){localStorage.setItem('tde_people',JSON.stringify(people));}
+  var people   = JSON.parse(localStorage.getItem('cnc_people') || 'null') || PEOPLE_DEFAULT;
+  var isAdmin  = false;
+  var editIdx  = null;
+  var pinBuf   = '';
 
-  /* ── TOAST ── */
-  var toastTimer=null;
+  function el(id){ return document.getElementById(id); }
+  function save(){ localStorage.setItem('cnc_people', JSON.stringify(people)); }
+
+  function slug(n){
+    return n.toLowerCase()
+      .replace(/[áàä]/g,'a').replace(/[éèë]/g,'e').replace(/[íìï]/g,'i')
+      .replace(/[óòö]/g,'o').replace(/[úùü]/g,'u').replace(/ñ/g,'n')
+      .replace(/\s+/g,'-').replace(/[^a-z0-9-]/g,'');
+  }
+
+  /* TOAST */
+  var _tt;
   function toast(msg){
     var t=el('toast');t.textContent=msg;t.classList.add('show');
-    clearTimeout(toastTimer);toastTimer=setTimeout(function(){t.classList.remove('show');},2200);
+    clearTimeout(_tt);_tt=setTimeout(function(){t.classList.remove('show');},2200);
   }
 
-  /* ── PIN ── */
-  function openPin(){
-    pinBuffer='';updateDots();el('pin-err').textContent='';
-    el('pin-overlay').classList.add('show');
-  }
-  function closePin(){el('pin-overlay').classList.remove('show');pinBuffer='';}
-  function updateDots(){
-    for(var i=0;i<4;i++)el('d'+i).classList.toggle('filled',i<pinBuffer.length);
-  }
-  function checkPin(){
-    if(pinBuffer===ADMIN_PIN){
-      closePin();enterAdmin();
-    } else {
-      el('pin-err').textContent='PIN incorrecto';
-      pinBuffer='';updateDots();
-      setTimeout(function(){el('pin-err').textContent='';},1500);
+  /* QR HELPER */
+  function makeQR(container, text, size){
+    container.innerHTML='';
+    try{
+      new QRCode(container,{text:text,width:size,height:size,colorDark:'#000000',colorLight:'#ffffff',correctLevel:QRCode.CorrectLevel.M});
+    }catch(e){
+      container.innerHTML='<div style="width:'+size+'px;height:'+size+'px;background:#fff"></div>';
     }
   }
-  document.querySelectorAll('.pin-key[data-n]').forEach(function(k){
-    k.addEventListener('click',function(){
-      if(pinBuffer.length>=4)return;
-      pinBuffer+=k.dataset.n;updateDots();
-      if(pinBuffer.length===4)setTimeout(checkPin,120);
-    });
-  });
-  el('pin-del').addEventListener('click',function(){pinBuffer=pinBuffer.slice(0,-1);updateDots();el('pin-err').textContent='';});
-  el('pin-cancel').addEventListener('click',closePin);
 
-  /* ── ADMIN ── */
-  function enterAdmin(){
-    isAdmin=true;
-    el('admin-badge').style.display='inline-flex';
-    el('btn-add').style.display='flex';
-    el('btn-lock').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 9.9-1"/></svg>';
-    el('btn-lock').title='Salir de admin';
-    render();toast('Modo admin activado');
-  }
-  function exitAdmin(){
-    isAdmin=false;
-    el('admin-badge').style.display='none';
-    el('btn-add').style.display='none';
-    el('btn-lock').innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="3" y="11" width="18" height="11" rx="2"/><path d="M7 11V7a5 5 0 0 1 10 0v4"/></svg>';
-    el('btn-lock').title='Panel de administración';
-    render();toast('Sesión admin cerrada');
-  }
-  el('btn-lock').addEventListener('click',function(){isAdmin?exitAdmin():openPin();});
-
-  /* ── SHEET FORM ── */
-  function openSheet(p,idx){
-    editIdx=idx===undefined?null:idx;
-    el('sheet-title').textContent=p?'Editar tarjeta':'Nueva tarjeta';
-    FIELDS.forEach(function(f){el('f-'+f).value=p?p[f]||'':'';});
-    el('form-err').style.display='none';
-    el('sheet-overlay').classList.add('show');
-    el('sheet').classList.add('show');
-    setTimeout(function(){el('f-nombre').focus();},350);
-  }
-  function closeSheet(){
-    el('sheet-overlay').classList.remove('show');
-    el('sheet').classList.remove('show');
-    editIdx=null;
-  }
-  el('btn-add').addEventListener('click',function(){openSheet(null);});
-  el('sheet-overlay').addEventListener('click',closeSheet);
-  el('btn-cancel').addEventListener('click',closeSheet);
-  el('btn-save').addEventListener('click',function(){
-    var nombre=el('f-nombre').value.trim(),tel=el('f-telefono').value.trim();
-    if(!nombre||!tel){el('form-err').style.display='block';return;}
-    var p={};FIELDS.forEach(function(f){p[f]=el('f-'+f).value.trim();});
-    if(editIdx!==null)people[editIdx]=p;else people.push(p);
-    save();closeSheet();render();
-    toast(editIdx!==null?'Tarjeta actualizada ✓':'Tarjeta creada ✓');
-  });
-
-  /* ── vCARD ── */
+  /* vCARD */
   function buildVCard(p){
-    var l=['BEGIN:VCARD','VERSION:3.0','N:'+p.apellido+';'+p.nombre+';;;','FN:'+p.nombre+(p.apellido?' '+p.apellido:'')];
-    if(p.empresa)l.push('ORG:'+p.empresa);
-    if(p.cargo)l.push('TITLE:'+p.cargo);
+    var fn = p.nombre+(p.apellido?' '+p.apellido:'');
+    var l  = ['BEGIN:VCARD','VERSION:3.0','N:'+p.apellido+';'+p.nombre+';;;','FN:'+fn];
+    if(p.empresa) l.push('ORG:'+p.empresa);
+    if(p.cargo)   l.push('TITLE:'+p.cargo);
     if(p.telefono)l.push('TEL;TYPE=CELL:'+p.telefono);
-    if(p.correo)l.push('EMAIL:'+p.correo);
+    if(p.correo)  l.push('EMAIL:'+p.correo);
     if(p.web){var u=p.web;if(!/^https?:\/\//i.test(u))u='https://'+u;l.push('URL:'+u);}
-    l.push('END:VCARD');return l.join('\r\n');
+    l.push('END:VCARD');
+    return l.join('\r\n');
   }
 
-  /* ── DESCARGA BLOB ── */
   function dlBlob(name,content,mime){
     var blob=new Blob([content],{type:mime});
     var url=URL.createObjectURL(blob);
@@ -444,131 +322,208 @@ var QRMaker=(function(){
     document.body.appendChild(a);a.click();document.body.removeChild(a);
     setTimeout(function(){URL.revokeObjectURL(url);},2000);
   }
-  function slug(p){return(p.nombre+'_'+(p.apellido||'')).toLowerCase().replace(/\s+/g,'_').replace(/[^a-z0-9_]/g,'');}
 
-  /* ── GENERAR HTML INDIVIDUAL (para compartir con el comercial) ── */
-  function generatePersonHTML(p){
-    var vc=buildVCard(p);
-    var qrSvg='';
-    try{qrSvg=QRMaker.svg(vc,200);}catch(e){qrSvg='<svg width="200" height="200"><rect fill="#fff" width="200" height="200"/></svg>';}
+  /* ── DETECTAR SI SE ABRE CON ?id= ── */
+  var urlParams = new URLSearchParams(location.search);
+  var viewId    = urlParams.get('id');
 
-    var nombre=p.nombre+(p.apellido?' '+p.apellido:'');
-    var vcEscaped=vc.replace(/\\/g,'\\\\').replace(/'/g,"\\'").replace(/\r\n/g,'\\r\\n');
-
-    return '<!DOCTYPE html>\n<html lang="es">\n<head>\n<meta charset="UTF-8">\n<meta name="viewport" content="width=device-width,initial-scale=1.0,maximum-scale=1.0,user-scalable=no">\n<meta name="apple-mobile-web-app-capable" content="yes">\n<meta name="apple-mobile-web-app-status-bar-style" content="black-translucent">\n<meta name="apple-mobile-web-app-title" content="'+p.nombre+'">\n<meta name="theme-color" content="#0f0f0f">\n<title>'+nombre+'</title>\n<style>\n*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}\n:root{--safe-top:env(safe-area-inset-top,0px);--safe-bottom:env(safe-area-inset-bottom,0px)}\nbody{background:#0f0f0f;font-family:-apple-system,BlinkMacSystemFont,"SF Pro Text","Segoe UI",Helvetica,Arial,sans-serif;color:#f0ede6;min-height:100vh;display:flex;flex-direction:column;align-items:center;justify-content:center;padding:24px 20px calc(24px + var(--safe-bottom));-webkit-font-smoothing:antialiased}\n.card{background:linear-gradient(145deg,#1e1c18,#131210);border:0.5px solid #2a2620;border-radius:24px;padding:28px 24px 24px;width:100%;max-width:360px;position:relative;overflow:hidden}\n.card::before{content:\'\';position:absolute;top:0;left:0;right:0;height:3px;background:linear-gradient(90deg,#3b7eff,#7aaeff)}\n.top{display:flex;gap:16px;align-items:flex-start;margin-bottom:20px}\n.info{flex:1;min-width:0}\nh1{font-size:20px;font-weight:700;color:#f5f2ec;line-height:1.2;margin-bottom:4px}\n.role{font-size:13px;color:#7aaeff;margin-bottom:4px}\n.company{font-size:11px;color:#5c5a56;text-transform:uppercase;letter-spacing:1px;margin-top:6px}\n.qr-box{background:#fff;border-radius:12px;padding:8px;flex-shrink:0;width:108px;height:108px;display:flex;align-items:center;justify-content:center}\n.qr-box svg{display:block}\n.divider{height:0.5px;background:#2a2620;margin:0 0 16px}\n.contacts{display:flex;flex-direction:column;gap:8px;margin-bottom:20px}\n.crow{display:flex;align-items:center;gap:10px;font-size:13px;color:#c5c0b6}\n.crow svg{width:15px;height:15px;color:#5c5a56;flex-shrink:0}\n.actions{display:flex;gap:9px}\n.btn{flex:1;padding:13px 8px;border-radius:12px;border:none;font-size:13px;font-weight:600;cursor:pointer;font-family:inherit;display:flex;align-items:center;justify-content:center;gap:6px;transition:opacity .15s}\n.btn:active{opacity:.75}\n.btn svg{width:16px;height:16px}\n.btn-green{background:rgba(34,197,94,.15);color:#22c55e}\n.btn-blue{background:rgba(59,126,255,.15);color:#3b7eff}\n.tip{margin-top:16px;font-size:11.5px;color:#5c5a56;text-align:center;line-height:1.5}\n</style>\n</head>\n<body>\n<div class="card">\n  <div class="top">\n    <div class="info">\n      <h1>'+p.nombre+(p.apellido?'<br>'+p.apellido:'')+'</h1>\n      '+(p.cargo?'<p class="role">'+p.cargo+'</p>':'')+'\n      '+(p.empresa?'<p class="company">'+p.empresa+'</p>':'')+'\n    </div>\n    <div class="qr-box">'+qrSvg+'</div>\n  </div>\n  <div class="divider"></div>\n  <div class="contacts">\n    '+(p.telefono?'<div class="crow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>'+p.telefono+'</div>':'')+'\n    '+(p.correo?'<div class="crow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>'+p.correo+'</div>':'')+'\n    '+(p.web?'<div class="crow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'+p.web+'</div>':'')+'\n  </div>\n  <div class="actions">\n    <button class="btn btn-green" id="bvcf" type="button" onclick="dlVcf()">\n      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg>\n      Guardar contacto\n    </button>\n    <button class="btn btn-blue" type="button" onclick="dlQr()">\n      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M21 15v4a2 2 0 0 1-2 2H5a2 2 0 0 1-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/></svg>\n      Descargar QR\n    </button>\n  </div>\n  <p class="tip">Escanea el QR con la cámara de tu celular para guardar el contacto</p>\n</div>\n<script>\nvar VC=\''+vcEscaped+'\';\nfunction dl(n,c,m){var b=new Blob([c],{type:m}),u=URL.createObjectURL(b),a=document.createElement(\'a\');a.href=u;a.download=n;document.body.appendChild(a);a.click();document.body.removeChild(a);setTimeout(function(){URL.revokeObjectURL(u);},1500);}\nfunction dlVcf(){dl(\'contacto_'+slug(p)+'.vcf\',VC,\'text/vcard;charset=utf-8\');}\nfunction dlQr(){var s=document.querySelector(\'.qr-box svg\');if(s)dl(\'qr_'+slug(p)+'.svg\',\'<?xml version="1.0"?>\'+s.outerHTML,\'image/svg+xml\');}\n<\/script>\n</body>\n</html>';
+  if(viewId){
+    /* Modo tarjeta individual */
+    var p = null;
+    for(var i=0;i<people.length;i++){
+      if(slug(people[i].nombre)===viewId){ p=people[i]; break; }
+    }
+    if(p){
+      var vc = buildVCard(p);
+      el('s-name').textContent    = p.nombre+(p.apellido?' '+p.apellido:'');
+      el('s-role').textContent    = p.cargo||'';
+      el('s-company').textContent = p.empresa||'';
+      var ct=el('s-contacts');
+      if(p.telefono)ct.innerHTML+='<div class="single-crow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.128.6.266 1.17.418 1.71a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.54.152 1.11.29 1.71.418A2 2 0 0 1 22 16.92z"/></svg>'+p.telefono+'</div>';
+      if(p.correo) ct.innerHTML+='<div class="single-crow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>'+p.correo+'</div>';
+      if(p.web)    ct.innerHTML+='<div class="single-crow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><circle cx="12" cy="12" r="10"/><path d="M2 12h20M12 2a15.3 15.3 0 0 1 4 10 15.3 15.3 0 0 1-4 10 15.3 15.3 0 0 1-4-10 15.3 15.3 0 0 1 4-10z"/></svg>'+p.web+'</div>';
+      makeQR(el('s-qr'), vc, 94);
+      el('s-vcf').onclick  = function(){ dlBlob('contacto_'+slug(p.nombre)+'.vcf',vc,'text/vcard;charset=utf-8'); };
+      el('s-qrdl').onclick = function(){
+        var canvas=el('s-qr').querySelector('canvas');
+        if(canvas){var a=document.createElement('a');a.href=canvas.toDataURL('image/png');a.download='qr_'+slug(p.nombre)+'.png';document.body.appendChild(a);a.click();document.body.removeChild(a);}
+      };
+      el('card-view').classList.add('show');
+      document.title = (p.nombre+(p.apellido?' '+p.apellido:''))+' — CONALCA';
+    }
+    return; /* No cargar el resto de la app */
   }
 
-  /* ── FALLBACK WHATSAPP ── */
-  /* En desktop o navegadores sin Web Share API:
-     descarga el archivo y abre WhatsApp con instrucciones */
-  function fallbackWa(p,nombre,html){
-    /* 1. Descargar el archivo automáticamente */
-    dlBlob('tarjeta_'+slug(p)+'.html',html,'text/html;charset=utf-8');
-    /* 2. Abrir WhatsApp con mensaje + instrucción de adjuntar */
-    var msg='Hola '+p.nombre+'! 👋\n\nTe comparto tu tarjeta digital personalizada.\n\nAcabo de enviarte el archivo *tarjeta_'+slug(p)+'.html* — ábrelo en el navegador de tu celular para ver tu código QR y poder guardar y compartir tu contacto.\n\nPuedes instalarlo como app: en iPhone toca "Compartir → Añadir a pantalla de inicio" y en Android toca el menú → "Añadir a pantalla de inicio" 📱';
-    var url='https://wa.me/?text='+encodeURIComponent(msg);
-    window.open(url,'_blank');
-    toast('Archivo descargado — adjúntalo en WhatsApp');
+  /* ── MODO NORMAL: PIN + ADMIN ── */
+  function updateDots(){
+    for(var i=0;i<4;i++) el('d'+i).classList.toggle('on', i<pinBuf.length);
   }
+  function pinError(msg){
+    el('pin-err').textContent=msg;
+    pinBuf='';updateDots();
+    setTimeout(function(){el('pin-err').textContent='';},1800);
+  }
+  function checkPin(){
+    if(pinBuf===PIN) enterAdmin();
+    else pinError('PIN incorrecto');
+  }
+  document.querySelectorAll('.pin-key[data-n]').forEach(function(k){
+    k.addEventListener('click',function(){
+      if(pinBuf.length>=4)return;
+      pinBuf+=k.dataset.n;updateDots();
+      if(pinBuf.length===4)setTimeout(checkPin,150);
+    });
+  });
+  el('pin-del').addEventListener('click',function(){pinBuf=pinBuf.slice(0,-1);updateDots();el('pin-err').textContent='';});
+  el('pin-skip').addEventListener('click',enterViewer);
 
-  /* ── RENDER ── */
+  function enterAdmin(){
+    isAdmin=true;
+    el('pin-screen').classList.add('hide');
+    el('app').classList.remove('hide');
+    el('btn-add').style.display='flex';
+    el('topbar-title').innerHTML='CONALCA <span class="admin-pill">Admin</span>';
+    render(); toast('Modo admin ✓');
+  }
+  function enterViewer(){
+    isAdmin=false;
+    el('pin-screen').classList.add('hide');
+    el('app').classList.remove('hide');
+    el('btn-add').style.display='none';
+    el('topbar-title').textContent='CONALCA';
+    render();
+  }
+  el('btn-exit').addEventListener('click',function(){
+    el('app').classList.add('hide');
+    el('pin-screen').classList.remove('hide');
+    isAdmin=false;pinBuf='';updateDots();
+  });
+
+  /* SHEET */
+  function openSheet(p,idx){
+    editIdx=idx===undefined?null:idx;
+    el('sheet-head').textContent=p?'Editar tarjeta':'Nueva tarjeta';
+    FIELDS.forEach(function(f){
+      var val=p?(f==='nombre'&&p.apellido?p.nombre:p[f]||''):'';
+      if(f==='nombre'&&p&&p.nombre){
+        var parts=p.nombre.split(' ');
+        el('f-nombre').value=parts[0]||'';
+      } else {
+        el('f-'+f).value=val;
+      }
+    });
+    if(p){
+      var parts=p.nombre.split(' ');
+      el('f-nombre').value=parts[0]||'';
+      el('f-apellido').value=parts.slice(1).join(' ')||'';
+      el('f-cargo').value=p.cargo||'';
+      el('f-empresa').value=p.empresa||'';
+      el('f-telefono').value=p.telefono||'';
+      el('f-correo').value=p.correo||'';
+      el('f-web').value=p.web||'';
+    } else {
+      FIELDS.forEach(function(f){el('f-'+f).value='';});
+    }
+    el('ferr').style.display='none';
+    el('overlay').classList.add('show');
+    el('sheet').classList.add('show');
+    setTimeout(function(){el('f-nombre').focus();},350);
+  }
+  function closeSheet(){
+    el('overlay').classList.remove('show');
+    el('sheet').classList.remove('show');
+    editIdx=null;
+  }
+  el('btn-add').addEventListener('click',function(){openSheet(null);});
+  el('overlay').addEventListener('click',closeSheet);
+  el('btn-cancel').addEventListener('click',closeSheet);
+  el('btn-save').addEventListener('click',function(){
+    var nombre=el('f-nombre').value.trim();
+    var apellido=el('f-apellido').value.trim();
+    var tel=el('f-telefono').value.trim();
+    if(!nombre||!tel){el('ferr').style.display='block';return;}
+    var p={
+      nombre:nombre+(apellido?' '+apellido:''),
+      cargo:el('f-cargo').value.trim(),
+      empresa:el('f-empresa').value.trim(),
+      telefono:tel,
+      correo:el('f-correo').value.trim(),
+      web:el('f-web').value.trim()
+    };
+    if(editIdx!==null)people[editIdx]=p;else people.push(p);
+    save();closeSheet();render();
+    toast(editIdx!==null?'Actualizado ✓':'Creado ✓');
+  });
+
+  /* RENDER */
   function render(){
     var n=people.length;
-    el('subtitle').textContent=n===0?'Ningún contacto':n===1?'1 persona':n+' personas';
+    el('subtitle').textContent=n+' persona'+(n!==1?'s':'')+' · CONALCA';
     el('empty').style.display=n===0?'flex':'none';
     var list=el('cards-list');list.innerHTML='';
 
     people.forEach(function(p,idx){
-      var vc=buildVCard(p);
-      var qrSvg='';
-      try{qrSvg=QRMaker.svg(vc,60);}catch(e){qrSvg='<svg width="60" height="60"><rect fill="#fff" width="60" height="60"/></svg>';}
+      var vc  = buildVCard(p);
+      var pid = slug(p.nombre);
+      var url = BASE+'?id='+pid;
 
       var wrap=document.createElement('div');
       var card=document.createElement('div');card.className='biz-card';
 
       var top=document.createElement('div');top.className='card-top';
       var txt=document.createElement('div');
-      txt.innerHTML='<div class="card-name">'+p.nombre+(p.apellido?' '+p.apellido:'')+'</div>'
+      txt.innerHTML='<div class="card-name">'+p.nombre+'</div>'
         +(p.cargo?'<div class="card-role">'+p.cargo+'</div>':'')
         +(p.empresa?'<div class="card-company">'+p.empresa+'</div>':'');
-      var qw=document.createElement('div');qw.className='qr-wrap';qw.innerHTML=qrSvg;
+      var qw=document.createElement('div');qw.className='qr-wrap';
       top.appendChild(txt);top.appendChild(qw);
 
       var dv=document.createElement('div');dv.className='card-div';
       var ct=document.createElement('div');ct.className='card-contacts';
-      if(p.telefono)ct.innerHTML+='<div class="contact-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72 12.84 12.84 0 0 0 .7 2.81 2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45 12.84 12.84 0 0 0 2.81.7A2 2 0 0 1 22 16.92z"/></svg>'+p.telefono+'</div>';
-      if(p.correo)ct.innerHTML+='<div class="contact-row"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>'+p.correo+'</div>';
-
+      if(p.telefono)ct.innerHTML+='<div class="crow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M22 16.92v3a2 2 0 0 1-2.18 2 19.79 19.79 0 0 1-8.63-3.07A19.5 19.5 0 0 1 4.69 12 19.79 19.79 0 0 1 1.61 3.18 2 2 0 0 1 3.6 1h3a2 2 0 0 1 2 1.72c.128.6.266 1.17.418 1.71a2 2 0 0 1-.45 2.11L7.91 8.6a16 16 0 0 0 6 6l.91-.91a2 2 0 0 1 2.11-.45c.54.152 1.11.29 1.71.418A2 2 0 0 1 22 16.92z"/></svg>'+p.telefono+'</div>';
+      if(p.correo)ct.innerHTML+='<div class="crow"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="2" y="4" width="20" height="16" rx="2"/><path d="m2 7 10 7 10-7"/></svg>'+p.correo+'</div>';
       card.appendChild(top);card.appendChild(dv);card.appendChild(ct);
 
-      /* Acciones según modo */
+      /* Panel de URL */
+      var urlPanel=document.createElement('div');urlPanel.className='url-panel show';
+      urlPanel.innerHTML='<div class="url-label">Enlace de esta tarjeta</div>'
+        +'<div class="url-box"><span style="flex:1">'+url+'</span>'
+        +'<button class="url-copy" data-url="'+url+'" type="button">Copiar</button></div>'
+        +'<button class="url-wa" data-url="'+url+'" data-nombre="'+p.nombre.split(' ')[0]+'" type="button">'
+        +'<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.571a.75.75 0 0 0 .916.932l5.909-1.548A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.726 9.726 0 0 1-4.961-1.355l-.355-.212-3.683.965.981-3.588-.232-.369A9.722 9.722 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg>'
+        +' Enviar por WhatsApp</button>';
+
+      card.appendChild(urlPanel);
+
       var act=document.createElement('div');act.className='card-actions';
-
-      /* Botón compartir (siempre visible) */
-      /* ── Botón: descargar HTML individual ── */
-      var bShare=document.createElement('button');bShare.type='button';bShare.className='cta cta-yellow';
-      bShare.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M4 12v8a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-8"/><polyline points="16 6 12 2 8 6"/><line x1="12" y1="2" x2="12" y2="15"/></svg> Descargar';
-      bShare.title='Descarga el archivo HTML personal de este comercial';
-      bShare.addEventListener('click',function(){
-        var html=generatePersonHTML(p);
-        dlBlob('tarjeta_'+slug(p)+'.html',html,'text/html;charset=utf-8');
-        toast('Tarjeta de '+p.nombre+' descargada ✓');
-      });
-
-      /* ── Botón: compartir por WhatsApp ── */
-      var bWa=document.createElement('button');bWa.type='button';bWa.className='cta cta-wa';
-      bWa.title='Compartir tarjeta por WhatsApp';
-      bWa.innerHTML='<svg viewBox="0 0 24 24" fill="currentColor" style="width:16px;height:16px;flex-shrink:0"><path d="M17.472 14.382c-.297-.149-1.758-.867-2.03-.967-.273-.099-.471-.148-.67.15-.197.297-.767.966-.94 1.164-.173.199-.347.223-.644.075-.297-.15-1.255-.463-2.39-1.475-.883-.788-1.48-1.761-1.653-2.059-.173-.297-.018-.458.13-.606.134-.133.298-.347.446-.52.149-.174.198-.298.298-.497.099-.198.05-.371-.025-.52-.075-.149-.669-1.612-.916-2.207-.242-.579-.487-.5-.669-.51-.173-.008-.371-.01-.57-.01-.198 0-.52.074-.792.372-.272.297-1.04 1.016-1.04 2.479 0 1.462 1.065 2.875 1.213 3.074.149.198 2.096 3.2 5.077 4.487.709.306 1.262.489 1.694.625.712.227 1.36.195 1.871.118.571-.085 1.758-.719 2.006-1.413.248-.694.248-1.289.173-1.413-.074-.124-.272-.198-.57-.347z"/><path d="M12 0C5.373 0 0 5.373 0 12c0 2.123.554 4.118 1.528 5.852L.057 23.571a.75.75 0 0 0 .916.932l5.909-1.548A11.943 11.943 0 0 0 12 24c6.627 0 12-5.373 12-12S18.627 0 12 0zm0 21.75a9.726 9.726 0 0 1-4.961-1.355l-.355-.212-3.683.965.981-3.588-.232-.369A9.722 9.722 0 0 1 2.25 12C2.25 6.615 6.615 2.25 12 2.25S21.75 6.615 21.75 12 17.385 21.75 12 21.75z"/></svg> WhatsApp';
-      bWa.addEventListener('click',function(){
-        var html=generatePersonHTML(p);
-        var nombre=p.nombre+(p.apellido?' '+p.apellido:'');
-
-        /* Intentar Web Share API (funciona en móvil con archivo adjunto) */
-        if(navigator.share && navigator.canShare){
-          var file=new File([html],'tarjeta_'+slug(p)+'.html',{type:'text/html'});
-          if(navigator.canShare({files:[file]})){
-            navigator.share({
-              files:[file],
-              title:'Tarjeta digital — '+nombre,
-              text:'Hola '+p.nombre+', te comparto tu tarjeta digital. Ábrela en el navegador para ver tu QR y compartir tu contacto 👇'
-            }).then(function(){
-              toast('Compartido ✓');
-            }).catch(function(e){
-              if(e.name!=='AbortError')fallbackWa(p,nombre,html);
-            });
-            return;
-          }
-        }
-        fallbackWa(p,nombre,html);
-      });
-
-      act.appendChild(bShare);
-      act.appendChild(bWa);
-
       if(isAdmin){
-        var bVcf=document.createElement('button');bVcf.type='button';bVcf.className='cta cta-green';
-        bVcf.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><rect x="5" y="2" width="14" height="20" rx="2"/><line x1="12" y1="18" x2="12.01" y2="18"/></svg> Contacto';
-        bVcf.addEventListener('click',function(){dlBlob('contacto_'+slug(p)+'.vcf',vc,'text/vcard;charset=utf-8');toast('Contacto descargado');});
-
         var bEdit=document.createElement('button');bEdit.type='button';bEdit.className='cta cta-gray';
         bEdit.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><path d="M11 4H4a2 2 0 0 0-2 2v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 0 1 3 3L12 15l-4 1 1-4 9.5-9.5z"/></svg> Editar';
         bEdit.addEventListener('click',function(){openSheet(people[idx],idx);});
-
         var bDel=document.createElement('button');bDel.type='button';bDel.className='cta cta-red';
-        bDel.setAttribute('aria-label','Eliminar');
-        bDel.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/><path d="M10 11v6M14 11v6"/></svg>';
-        bDel.addEventListener('click',function(){people.splice(idx,1);save();render();toast('Eliminado');});
-
-        act.appendChild(bVcf);act.appendChild(bEdit);act.appendChild(bDel);
+        bDel.innerHTML='<svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round"><polyline points="3 6 5 6 21 6"/><path d="M19 6l-1 14a2 2 0 0 1-2 2H8a2 2 0 0 1-2-2L5 6"/></svg>';
+        bDel.addEventListener('click',function(){if(confirm('¿Eliminar?')){people.splice(idx,1);save();render();}});
+        act.appendChild(bEdit);act.appendChild(bDel);
       }
-
       wrap.appendChild(card);wrap.appendChild(act);
       list.appendChild(wrap);
+      makeQR(qw,vc,60);
+
+      /* Eventos copiar / WhatsApp */
+      urlPanel.querySelector('.url-copy').addEventListener('click',function(){
+        var u=this.dataset.url;
+        navigator.clipboard.writeText(u).then(function(){toast('Enlace copiado ✓');}).catch(function(){toast(u);});
+      });
+      urlPanel.querySelector('.url-wa').addEventListener('click',function(){
+        var u=this.dataset.url;
+        var nombre=this.dataset.nombre;
+        var msg='Hola '+nombre+' 👋\n\nTe comparto tu tarjeta digital de CONALCA:\n\n'+u+'\n\nÁbrela en el navegador para ver tu QR y guardar tu contacto. También puedes instalarla como app en tu celular 📱';
+        window.open('https://wa.me/?text='+encodeURIComponent(msg),'_blank');
+      });
     });
   }
 
   render();
-  setTimeout(function(){el('splash').classList.add('hide');},1000);
 })();
 </script>
 </body>
